@@ -1,7 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"sarkerjr.com/go-reverse/internal/server"
+	"sarkerjr.com/go-reverse/pkg/initializer"
+)
 
 func main() {
-	fmt.Println("Hello World!")
+	initializer.Initialize()
+
+	server.StartServer()
 }
