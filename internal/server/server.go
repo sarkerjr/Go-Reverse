@@ -6,11 +6,24 @@ import (
 
 	"sarkerjr.com/go-reverse/internal/logger"
 	"sarkerjr.com/go-reverse/internal/proxy"
+	rate_limiter "sarkerjr.com/go-reverse/internal/rate-limiter"
 )
 
 func StartServer() {
 	proxySrv := proxy.NewProxy()
-	http.Handle("/", logger.LoggingMiddleware()(logger.ErrorHandlerMiddleware()(http.HandlerFunc(proxySrv.HandleRequest))))
+
+	// create a new IP-based rate limiter instance
+	ipRateLimiter := rate_limiter.NewIPBasedRateLimiter(5, 10)
+
+	http.Handle("/",
+		logger.LoggingMiddleware()(
+			logger.ErrorHandlerMiddleware()(
+				ipRateLimiter.Middleware(
+					http.HandlerFunc(proxySrv.HandleRequest),
+				),
+			),
+		),
+	)
 
 	config := proxy.GetConfig()
 	log.Printf("Starting reverse proxy server on port %s...", config.Port)
