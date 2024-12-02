@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"sarkerjr.com/go-reverse/internal/server"
 	"sarkerjr.com/go-reverse/pkg/initializer"
 )
@@ -8,5 +10,7 @@ import (
 func main() {
 	initializer.Initialize()
 
-	server.StartServer()
+	if err := server.StartServer(); err != nil {
+		log.Fatal(err)
+	}
 }
